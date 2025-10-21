@@ -22,7 +22,7 @@ Sistema de pagamentos simplificado com suporte a Pix, Cartão de Crédito e Bole
 ### 1. Clone o projeto
 
 ```bash
-git clone https://github.com/reinaldoper/payment-method.git
+git clone git@github.com:reinaldoper/payment-method.git
 cd payment-method
 npm install
 ```
