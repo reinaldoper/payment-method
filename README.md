@@ -13,6 +13,7 @@ Sistema de pagamentos simplificado com suporte a Pix, Cartão de Crédito e Bole
 - [Class Validator](https://github.com/typestack/class-validator) — Validação de DTOs
 - [Swagger](https://swagger.io/) — Documentação interativa da API
 - [Docker](https://www.docker.com/) — Container Docker
+- [Helmet](https://helmetjs.github.io/) — Helmet, proteção com requisições do header
 
 ---
 
