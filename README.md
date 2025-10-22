@@ -96,6 +96,7 @@ http://localhost:3001/api/docs
 - Uma cobrança só pode ser excluída se estiver com status PENDING
 - Boletos vencidos são automaticamente expirados via endpoint
 - Pagamentos podem ser atualizados para PAID, FAILED, EXPIRED
+- Para criar uma cobrança, o idempotencyKey deve ser único para cada tentativa de criação. Se uma cobrança com a mesma chave já existir, uma exceção de conflito será lançada.
 
 
 🛠️ Estrutura de Pastas
