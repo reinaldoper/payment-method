@@ -83,7 +83,7 @@ http://localhost:3001/api/docs
 | GET    | `/charge/:id`                                  | Buscar cobrança por ID                     |
 | GET    | `/charge`                                      | Listar todas as cobranças                  |
 | GET    | `/charge/customer/:customerId`                 | Listar cobranças de um cliente específico  |
-| POST    | `/charge/paginated?page=1&limit=10`           | ⚠️ Este endpoint usa POST para permitir filtros no corpo da requisição.|
+| POST    | `/charge/paginated?page=1&limit=10`           | ⚠️ Este endpoint usa POST para permitir filtros.|
 | PATCH  | `/charge/:id/status/:status`                   | Atualizar status da cobrança               |
 | POST   | `/charge/expire-overdue`                       | Expirar boletos vencidos                   |
 | DELETE | `/charge/:id`                                  | Excluir cobrança (somente se pendente)     |
