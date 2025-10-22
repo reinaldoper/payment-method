@@ -10,13 +10,20 @@ import {
   Query,
 } from '@nestjs/common';
 import { ChargeService } from './charge.service';
-import { CreateChargeDto } from './dto/create-charge.dto';
+import {
+  BoletoChargeDto,
+  CreditCardChargeDto,
+  PixChargeDto,
+} from './dto/create-charge.dto';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBody,
+  getSchemaPath,
+  ApiExtraModels,
 } from '@nestjs/swagger';
 import { ChargeStatus } from '@prisma/client';
 import { PaginationDto } from './dto/pagination.dto';
@@ -27,18 +34,31 @@ export class ChargeController {
   constructor(private readonly chargeService: ChargeService) {}
 
   @Post()
+  @ApiExtraModels(PixChargeDto, CreditCardChargeDto, BoletoChargeDto)
   @ApiOperation({
     summary: 'Criar nova cobrança',
     description:
       'Para criar uma cobrança, o idempotencyKey deve ser único para cada tentativa de criação. Se uma cobrança com a mesma chave já existir, uma exceção de conflito será lançada.',
   })
   @ApiResponse({ status: 201, description: 'Cobrança criada com sucesso' })
-  @ApiResponse({ status: 404, description: 'Cliente nao encontrado' })
+  @ApiResponse({ status: 404, description: 'Cliente não encontrado' })
   @ApiResponse({
     status: 409,
-    description: 'Cobrança com essa chave ja existe',
+    description: 'Cobrança com essa chave já existe',
   })
-  async create(@Body() dto: CreateChargeDto) {
+  @ApiBody({
+    description: 'Dados da cobrança conforme o método de pagamento',
+    schema: {
+      oneOf: [
+        { $ref: getSchemaPath(PixChargeDto) },
+        { $ref: getSchemaPath(CreditCardChargeDto) },
+        { $ref: getSchemaPath(BoletoChargeDto) },
+      ],
+    },
+  })
+  async create(
+    @Body() dto: PixChargeDto | CreditCardChargeDto | BoletoChargeDto,
+  ) {
     return this.chargeService.create(dto);
   }
 

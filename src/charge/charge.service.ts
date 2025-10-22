@@ -7,19 +7,18 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import {
   BoletoChargeDto,
-  CreateChargeDto,
   CreditCardChargeDto,
   PixChargeDto,
 } from './dto/create-charge.dto';
 import { ChargeStatus, PaymentMethod } from '@prisma/client';
-import { validateOrReject } from 'class-validator';
+import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ChargeService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateChargeDto) {
+  async create(dto: CreditCardChargeDto | PixChargeDto | BoletoChargeDto) {
     const customer = await this.prisma.customer.findUnique({
       where: { id: dto.customerId },
     });
@@ -46,26 +45,34 @@ export class ChargeService {
     });
   }
 
-  async paymentMethod(dto: CreateChargeDto) {
-    try {
-      switch (dto.method) {
-        case PaymentMethod.PIX:
-          await validateOrReject(plainToInstance(PixChargeDto, dto));
-          break;
-        case PaymentMethod.CREDIT_CARD:
-          await validateOrReject(plainToInstance(CreditCardChargeDto, dto));
-          break;
-        case PaymentMethod.BOLETO:
-          await validateOrReject(plainToInstance(BoletoChargeDto, dto));
-          break;
-        default:
-          throw new BadRequestException('Método de pagamento inválido');
-      }
-    } catch (error) {
-      throw new BadRequestException(error);
+  private async paymentMethod(
+    dto: CreditCardChargeDto | PixChargeDto | BoletoChargeDto,
+  ) {
+    let instance: CreditCardChargeDto | PixChargeDto | BoletoChargeDto;
+
+    switch (dto.method) {
+      case PaymentMethod.PIX:
+        instance = plainToInstance(PixChargeDto, dto);
+        break;
+      case PaymentMethod.CREDIT_CARD:
+        instance = plainToInstance(CreditCardChargeDto, dto);
+        break;
+      case PaymentMethod.BOLETO:
+        instance = plainToInstance(BoletoChargeDto, dto);
+        break;
+      default:
+        throw new BadRequestException('Método de pagamento inválido');
+    }
+
+    const errors = await validate(instance, {
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
+
+    if (errors.length > 0) {
+      throw new BadRequestException(errors);
     }
   }
-
   async findById(id: number) {
     const charge = await this.prisma.charge.findUnique({ where: { id } });
     if (!charge) throw new NotFoundException('Cobrança não encontrada');

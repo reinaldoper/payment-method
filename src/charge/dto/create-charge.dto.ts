@@ -1,7 +1,6 @@
 import {
   IsEnum,
   IsNumber,
-  IsOptional,
   IsDateString,
   IsInt,
   Min,
@@ -10,70 +9,135 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '@prisma/client';
+import { Expose } from 'class-transformer';
 
 export class CreateChargeDto {
   @ApiProperty({ example: 150.0 })
+  @Expose()
   @IsNumber()
   amount: number;
 
   @ApiProperty({ example: 'BRL' })
+  @Expose()
   @IsString()
   currency: string;
 
   @ApiProperty({ enum: PaymentMethod, example: 'PIX' })
+  @Expose()
   @IsEnum(PaymentMethod)
   method: PaymentMethod;
 
   @ApiProperty({ example: 1 })
+  @Expose()
   @IsInt()
   customerId: number;
 
-  @ApiProperty({ example: '2025-10-30T00:00:00.000Z', required: false })
-  @IsOptional()
-  @IsDateString()
-  dueDate?: string;
-
-  @ApiProperty({ example: 3, required: false })
-  @IsOptional()
-  @IsInt()
-  installments?: number;
-
-  @ApiProperty({ example: 'chave@pix.com.br', required: false })
-  @IsOptional()
-  @IsString()
-  pixKey?: string;
-
-  @ApiProperty({ example: 'qrCode123', required: false })
-  @IsOptional()
-  @IsString()
-  qrCode?: string;
-
   @ApiProperty({ example: 'key123' })
+  @Expose()
   @IsString()
   idempotencyKey: string;
 }
 
 export class CreditCardChargeDto {
-  @ApiProperty({ example: '123' })
+  @ApiProperty({ example: 150.0 })
+  @Expose()
+  @IsNumber()
+  amount: number;
+
+  @ApiProperty({ example: 'BRL' })
+  @Expose()
+  @IsString()
+  currency: string;
+
+  @ApiProperty({ enum: PaymentMethod, example: 'CREDIT_CARD' })
+  @Expose()
+  @IsEnum(PaymentMethod)
+  method: PaymentMethod;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
+  @IsInt()
+  customerId: number;
+
+  @ApiProperty({ example: 'key123' })
+  @Expose()
+  @IsString()
+  idempotencyKey: string;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
   @IsInt()
   @Min(1)
   installments: number;
 }
 
 export class PixChargeDto {
-  @ApiProperty({ example: 'chave@pix.com.br' })
+  @ApiProperty({ example: 150.0 })
+  @Expose()
+  @IsNumber()
+  amount: number;
+
+  @ApiProperty({ example: 'BRL' })
+  @Expose()
+  @IsString()
+  currency: string;
+
+  @ApiProperty({ enum: PaymentMethod, example: 'PIX' })
+  @Expose()
+  @IsEnum(PaymentMethod)
+  method: PaymentMethod;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
+  @IsInt()
+  customerId: number;
+
+  @ApiProperty({ example: 'key123' })
+  @Expose()
+  @IsString()
+  idempotencyKey: string;
+
+  @ApiProperty({ example: '123456789' })
+  @Expose()
   @IsString()
   @IsNotEmpty()
   pixKey: string;
 
-  @ApiProperty({ example: 'qrCode123' })
+  @ApiProperty({ example: 'QRCodeStringHere' })
+  @Expose()
   @IsString()
   @IsNotEmpty()
   qrCode: string;
 }
 
 export class BoletoChargeDto {
-  @ApiProperty({ example: '2025-10-30T00:00:00.000Z' })
+  @ApiProperty({ example: 150.0 })
+  @Expose()
+  @IsNumber()
+  amount: number;
+
+  @ApiProperty({ example: 'BRL' })
+  @Expose()
+  @IsString()
+  currency: string;
+
+  @ApiProperty({ enum: PaymentMethod, example: 'BOLETO' })
+  @Expose()
+  @IsEnum(PaymentMethod)
+  method: PaymentMethod;
+
+  @ApiProperty({ example: 1 })
+  @Expose()
+  @IsInt()
+  customerId: number;
+
+  @ApiProperty({ example: 'key123' })
+  @Expose()
+  @IsString()
+  idempotencyKey: string;
+
+  @ApiProperty({ example: '2024-12-31T23:59:59Z' })
+  @Expose()
   @IsDateString()
   dueDate: string;
 }
