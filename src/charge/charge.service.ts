@@ -1,7 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateChargeDto } from './dto/create-charge.dto';
+import {
+  BoletoChargeDto,
+  CreateChargeDto,
+  CreditCardChargeDto,
+  PixChargeDto,
+} from './dto/create-charge.dto';
 import { ChargeStatus, PaymentMethod } from '@prisma/client';
+import { validateOrReject } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ChargeService {
@@ -12,8 +24,18 @@ export class ChargeService {
       where: { id: dto.customerId },
     });
 
+    await this.paymentMethod(dto);
+
     if (!customer) {
       throw new NotFoundException('Cliente não encontrado');
+    }
+
+    const existing = await this.prisma.charge.findUnique({
+      where: { idempotencyKey: dto.idempotencyKey },
+    });
+
+    if (existing) {
+      throw new ConflictException('Cobrança com essa chave já existe');
     }
 
     return this.prisma.charge.create({
@@ -22,6 +44,26 @@ export class ChargeService {
         status: ChargeStatus.PENDING,
       },
     });
+  }
+
+  async paymentMethod(dto: CreateChargeDto) {
+    try {
+      switch (dto.method) {
+        case PaymentMethod.PIX:
+          await validateOrReject(plainToInstance(PixChargeDto, dto));
+          break;
+        case PaymentMethod.CREDIT_CARD:
+          await validateOrReject(plainToInstance(CreditCardChargeDto, dto));
+          break;
+        case PaymentMethod.BOLETO:
+          await validateOrReject(plainToInstance(BoletoChargeDto, dto));
+          break;
+        default:
+          throw new BadRequestException('Método de pagamento inválido');
+      }
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async findById(id: number) {

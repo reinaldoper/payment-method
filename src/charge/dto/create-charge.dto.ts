@@ -4,7 +4,9 @@ import {
   IsOptional,
   IsDateString,
   IsInt,
+  Min,
   IsString,
+  IsNotEmpty,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '@prisma/client';
@@ -45,4 +47,33 @@ export class CreateChargeDto {
   @IsOptional()
   @IsString()
   qrCode?: string;
+
+  @ApiProperty({ example: 'key123' })
+  @IsString()
+  idempotencyKey: string;
+}
+
+export class CreditCardChargeDto {
+  @ApiProperty({ example: '123' })
+  @IsInt()
+  @Min(1)
+  installments: number;
+}
+
+export class PixChargeDto {
+  @ApiProperty({ example: 'chave@pix.com.br' })
+  @IsString()
+  @IsNotEmpty()
+  pixKey: string;
+
+  @ApiProperty({ example: 'qrCode123' })
+  @IsString()
+  @IsNotEmpty()
+  qrCode: string;
+}
+
+export class BoletoChargeDto {
+  @ApiProperty({ example: '2025-10-30T00:00:00.000Z' })
+  @IsDateString()
+  dueDate: string;
 }
