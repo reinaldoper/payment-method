@@ -45,7 +45,7 @@ docker compose up -d
 ### 4. Execute as migrations
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev 
 ```
 
 ### 5. Rode a aplicação
