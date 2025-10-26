@@ -74,13 +74,46 @@ export class ChargeService {
     }
   }
   async findById(id: number) {
-    const charge = await this.prisma.charge.findUnique({ where: { id } });
+    const charge = await this.prisma.charge.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        customerId: true,
+        method: true,
+        status: true,
+        amount: true,
+        currency: true,
+        idempotencyKey: true,
+        createdAt: true,
+      },
+    });
+
     if (!charge) throw new NotFoundException('Cobrança não encontrada');
     return charge;
   }
 
   async findAll() {
-    return this.prisma.charge.findMany({ include: { customer: true } });
+    return this.prisma.charge.findMany({
+      select: {
+        id: true,
+        customerId: true,
+        method: true,
+        status: true,
+        amount: true,
+        currency: true,
+        idempotencyKey: true,
+        createdAt: true,
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            document: true,
+            phone: true,
+          },
+        },
+      },
+    });
   }
 
   async updateStatus(id: number, status: ChargeStatus) {
@@ -101,7 +134,25 @@ export class ChargeService {
     }
     return this.prisma.charge.findMany({
       where: { customerId },
-      include: { customer: true },
+      select: {
+        id: true,
+        customerId: true,
+        method: true,
+        status: true,
+        amount: true,
+        currency: true,
+        idempotencyKey: true,
+        createdAt: true,
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            document: true,
+            phone: true,
+          },
+        },
+      },
     });
   }
 
@@ -148,7 +199,25 @@ export class ChargeService {
       this.prisma.charge.findMany({
         skip,
         take: limit,
-        include: { customer: true },
+        select: {
+          id: true,
+          customerId: true,
+          method: true,
+          status: true,
+          amount: true,
+          currency: true,
+          idempotencyKey: true,
+          createdAt: true,
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              document: true,
+              phone: true,
+            },
+          },
+        },
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.charge.count(),
