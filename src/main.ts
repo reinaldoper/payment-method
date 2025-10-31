@@ -4,6 +4,12 @@ import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
+/**
+ * Bootstrap function for the application.
+ * It creates a new NestJS application instance and
+ * configures it with the necessary middleware and routes.
+ * It also sets up the Swagger documentation for the API.
+ */
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(
